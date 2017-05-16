@@ -80,7 +80,6 @@ The configuration items are described below:
 
 1. “RemoteDirs”:  Map of remote dirs.
 1. “<dir-A-label>” – must be unique and admin defined and identifies a specific remote dir or another entry within the list
-1. “addr” – IP or fully qualified host name of server
 1. “args – args to mount remote dir.
 1. “path” – path on server to mount
 1. “type” – FS type of remote dir.
