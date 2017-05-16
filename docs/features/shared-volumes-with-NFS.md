@@ -1,9 +1,9 @@
-# Supporting shared volumes with vSphere Docker Volumes
+# Supporting NFS shared volumes with vDVS
 
 ## Requirements
-* Developer should able to use externally managed NFS share as “shared docker volume” using “vsphere” volume driver.
+* Developer should be able to use externally managed NFS share as “shared docker volume” using “vsphere” volume driver.
 * This allows them to use NFS directories as docker volumes using Docker APIs, Compose etc 
-* Extend the vSphere Docker Volume plugin to support NFS shared volumes and mutliple readers/writers access
+* Extend the vSphere Docker Volume plugin to support NFS shared volumes and multiple readers/writers access
 * Volumes are accessible on multiple docker hosts running on  multiple ESX hosts in a Docker swarm
 * Allow admin to specify what remote dirs are managed by the plugin
 * Support all current docker volume plugin API for shared volumes
@@ -13,8 +13,9 @@
 The design here assumes that the admin is responsible to identify remote directories to export and has configured remote servers to export those. Specifically, the admin needs to have,
 1. Exported remote directories to be used to host docker volumes.
 1. Configured sufficient permissions for the admins on the Docker host to be able to mount and create folders and files on those directories.
-1. The docker host has the necessary packages of the desired version of NFS installed.
-1. The admin can use the same remote directory configuration on multiple docker hosts on separate physical hosts and be able to view and use the same volumes on their containers (the applications must be able to synchronize access to shared volumes).
+1. The docker host has the necessary packages of the desired version of NFS client installed.
+
+The admin can use the same remote directory configuration on multiple docker hosts on separate physical hosts and be able to view and use the same volumes on their containers (the applications must be able to synchronize access to shared volumes).
 
 ### Update plugin configuration
 The plugin needs to be provided the details of the exported diretories and the servers from which to mount them. The details are entered into the plugin configuration file at /etc/docker-volume-vsphere.conf in the format as detailed later.
@@ -112,7 +113,7 @@ Plugin maintains no in-memory state for either volumes or remote dirs. (except t
    - _access perms (ro, rw)_, remote-dir label, type (_file_ only allowed, if not specified defaults to _VMDK_ type)
 
 ## Tenancy
-There is no support for tenancy as supported for VMDK backed volumes. Instead, the admin manages multi-tenancy. User controls which VMs have access to what datastores to support multiple tenants. Remote dirs configuration s available to help the admin determine what datastores are visible per docker host and where volumes get placed.
+There is no support for multi-tenancy for NFS backed volumes, within the plugin. Instead, the admin manages this via the configuration of shared dirs to control which NFS datastores are used to place volumes for which containers or groups of containers(like service stacks for example).
 
 # Authentication
 
