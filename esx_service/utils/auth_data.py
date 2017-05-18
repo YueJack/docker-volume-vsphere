@@ -739,21 +739,26 @@ class AuthorizationDataManager:
         Create brand new DB content at self.db_path. Expects clean slate.
         :returns: None for success , a string (with error) for error
         """
-        if not self.conn:
-            self.__connect()
         err = self.__create_tables()
-        if not err:
-            err = self.__create_default_tenant()
-        if not err:
-            err = self.__create_all_ds_privileges_for_default_tenant()
-        if not err:
-            err = self.__create_vm_ds_privileges_for_default_tenant()
-
+        if err:
+            return err
+        err = self.__create_default_tenant()
+        if err:
+            return err
+        err = self.__create_all_ds_privileges_for_default_tenant()
+        if err:
+            return err
+        err = self.__create_vm_ds_privileges_for_default_tenant()
         if err:
             return err
         return None
 
     def new_db(self):
+        if not self.conn:
+            # Old DB will be opened or a new DB file will be created.
+            # If the DB exists, __init_db below will fail.
+            # Note that if something is wrong, this will throw so no err checking
+            self.__connect()
         err = self.__init_db()
         if err:
             os.remove(self.db_path)
